@@ -1,0 +1,107 @@
+#!/bin/bash
+#PBS -o /dev/null
+#PBS -e /dev/null
+#PBS -l nodes=1:ppn=4,mem=40gb
+#PBS -N CNVKIT_BATCH
+#PBS -q week
+cd $PBS_O_WORKDIR
+mkdir -p cnvkit log
+cnvkit.py batch \
+	bam/WES*/*.bam \
+	-n /home/users/kjyi/Projects/pon/tmkim_wes/bam/*.bam \
+	-t /home/users/kjyi/Projects/pon/tmkim_wes/target_bed/S04380110_SureSelectV5_DepthOfCoverage.bed \
+	-f /home/users/kjyi/ref/hg19.fa \
+	-p 4 \
+	--diagram --scatter \
+	--access /home/users/kjyi/ref/hg19/cnvkit/access-excludes.hg19.bed \
+	--output-reference /home/users/kjyi/pon/tmkim_wes/cnvkit_pon_cnn/tmkim_wes2.cnn -d cnvkit2 &> log/cnvkit.batch2.log
+exit 0
+
+usage: cnvkit.py batch [-h] [-m {hybrid,amplicon,wgs}] [-y] [-c]
+                       [--drop-low-coverage] [-p [PROCESSES]]
+                       [--rlibpath DIRECTORY] [-n [FILES [FILES ...]]]
+                       [-f FILENAME] [-t FILENAME] [-a FILENAME]
+                       [--annotate FILENAME] [--short-names]
+                       [--target-avg-size TARGET_AVG_SIZE] [-g FILENAME]
+                       [--antitarget-avg-size ANTITARGET_AVG_SIZE]
+                       [--antitarget-min-size ANTITARGET_MIN_SIZE]
+                       [--output-reference FILENAME] [-r REFERENCE]
+                       [-d DIRECTORY] [--scatter] [--diagram]
+                       [bam_files [bam_files ...]]
+
+positional arguments:
+  bam_files             Mapped sequence reads (.bam)
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -m {hybrid,amplicon,wgs}, --method {hybrid,amplicon,wgs}
+                        Sequencing protocol: hybridization capture ('hybrid'),
+                        targeted amplicon sequencing ('amplicon'), or whole
+                        genome sequencing ('wgs'). Determines whether and how
+                        to use antitarget bins. [Default: hybrid]
+  -y, --male-reference, --haploid-x-reference
+                        Use or assume a male reference (i.e. female samples
+                        will have +1 log-CNR of chrX; otherwise male samples
+                        would have -1 chrX).
+  -c, --count-reads     Get read depths by counting read midpoints within each
+                        bin. (An alternative algorithm).
+  --drop-low-coverage   Drop very-low-coverage bins before segmentation to
+                        avoid false-positive deletions in poor-quality tumor
+                        samples.
+  -p [PROCESSES], --processes [PROCESSES]
+                        Number of subprocesses used to running each of the BAM
+                        files in parallel. Without an argument, use the
+                        maximum number of available CPUs. [Default: process
+                        each BAM in serial]
+  --rlibpath DIRECTORY  Path to an alternative site-library to use for R
+                        packages.
+
+To construct a new copy number reference:
+  -n [FILES [FILES ...]], --normal [FILES [FILES ...]]
+                        Normal samples (.bam) used to construct the pooled,
+                        paired, or flat reference. If this option is used but
+                        no filenames are given, a "flat" reference will be
+                        built. Otherwise, all filenames following this option
+                        will be used.
+  -f FILENAME, --fasta FILENAME
+                        Reference genome, FASTA format (e.g. UCSC hg19.fa)
+  -t FILENAME, --targets FILENAME
+                        Target intervals (.bed or .list)
+  -a FILENAME, --antitargets FILENAME
+                        Antitarget intervals (.bed or .list)
+  --annotate FILENAME   Use gene models from this file to assign names to the
+                        target regions. Format: UCSC refFlat.txt or
+                        ensFlat.txt file (preferred), or BED, interval list,
+                        GFF, or similar.
+  --short-names         Reduce multi-accession bait labels to be short and
+                        consistent.
+  --target-avg-size TARGET_AVG_SIZE
+                        Average size of split target bins (results are
+                        approximate).
+  -g FILENAME, --access FILENAME
+                        Regions of accessible sequence on chromosomes (.bed),
+                        as output by the 'access' command.
+  --antitarget-avg-size ANTITARGET_AVG_SIZE
+                        Average size of antitarget bins (results are
+                        approximate).
+  --antitarget-min-size ANTITARGET_MIN_SIZE
+                        Minimum size of antitarget bins (smaller regions are
+                        dropped).
+  --output-reference FILENAME
+                        Output filename/path for the new reference file being
+                        created. (If given, ignores the -o/--output-dir option
+                        and will write the file to the given path. Otherwise,
+                        "reference.cnn" will be created in the current
+                        directory or specified output directory.)
+
+To reuse an existing reference:
+  -r REFERENCE, --reference REFERENCE
+                        Copy number reference file (.cnn).
+
+Output options:
+  -d DIRECTORY, --output-dir DIRECTORY
+                        Output directory.
+  --scatter             Create a whole-genome copy ratio profile as a PDF
+                        scatter plot.
+  --diagram             Create an ideogram of copy ratios on chromosomes as a
+                        PDF.

@@ -1,0 +1,24 @@
+#!/bin/bash
+#PBS -q day
+#PBS -e /dev/null
+#PBS -o /dev/null
+#PBS -N filter
+#PBS -l nodes=1:ppn=10
+cd $PBS_O_WORKDIR
+outdir=mutect2/filter1_xcontam
+mkdir -p $outdir
+mkdir -p mutect2/primary_call
+mv mutect2/*.vcf.gz* mutect2/primary_call/
+for i in mutect2/primary_call/*.vcf.gz; do
+	sample_name=$(basename $i | sed 's/.vcf.gz//')
+	primary_call_vcf=$i
+	contam_table=mutect2/calculate_contamination/$sample_name.calculate_contamination.table
+	output_vcf=$outdir/$sample_name.filter1.vcf.gz
+	java -jar gatk4.jar FilterMutectCalls \
+		-V $primary_call_vcf \
+		--contamination-table $contam_table \
+		-O $output_vcf &> log/$sample_name.filter1.log & 
+done
+wait
+echo a
+exit 0

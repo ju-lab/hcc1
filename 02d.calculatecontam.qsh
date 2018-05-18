@@ -1,0 +1,67 @@
+#!/bin/bash
+#PBS -N calculate_contam
+#PBS -q day
+#PBS -o /dev/null
+#PBS -e /dev/null
+#PBS -l nodes=1:ppn=20,mem=250gb
+#PBS -W depend=afterok:36535:36536:36537:36538:36539:36540:36541:36542:36543:36544:36545:36546:36547:36548:36549:36550:36551:36552:36553:36554:36555:36556
+if [ "x$PBS_O_WORKDIR" == "x" ]; then
+	echo bash/sh not qsub
+else
+	cd $PBS_O_WORKDIR
+fi
+outdir=mutect2/calculate_contamination
+logdir=log
+
+mkdir -p $outdir $logdir
+for i in mutect2/pileup_summary_table/*.getpileupsummaries.table; do
+	tumor_vcf=$i
+	tumor_name=$(basename $i | sed 's/.getpileupsummaries.table//')
+	output=$outdir/$tumor_name.calculate_contamination.table
+	log=$logdir/$tumor_name.calculate_contamination.log
+	java -jar gatk4.jar CalculateContamination \
+		-I $tumor_vcf \
+		-O $output &> $log &
+done
+echo asdf
+wait
+exit 0
+106T_.bai
+106T_.bam
+116T_.bai
+116T_.bam
+125T_.bai
+125T_.bam
+126T_.bai
+126T_.bam
+128T_.bai
+128T_.bam
+134T_.bai
+134T_.bam
+136T_.bai
+136T_.bam
+93T_.bai
+93T_.bam
+95T_.bai
+95T_.bam
+99T_.bai
+99T_.bam
+106T_.vcf.gz
+106T_.vcf.gz.tbi
+116T_.vcf.gz
+116T_.vcf.gz.tbi
+125T_.vcf.gz
+125T_.vcf.gz.tbi
+126T_.vcf.gz
+126T_.vcf.gz.tbi
+134T_.vcf.gz
+134T_.vcf.gz.tbi
+136T_.vcf.gz
+136T_.vcf.gz.tbi
+93T_.vcf.gz
+93T_.vcf.gz.tbi
+95T_.vcf.gz
+95T_.vcf.gz.tbi
+99T_.vcf.gz
+99T_.vcf.gz.tbi
+/home/users/kjyi/ref/hg19/gnomad/gnomad.exomes.AFonly.vcf.gz

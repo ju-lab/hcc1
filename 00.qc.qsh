@@ -1,0 +1,33 @@
+#!/bin/bash
+#       ----------------
+#PBS -N FastQC
+#       ----------------
+# This script run fastqc & multiqc for multiple files
+# This script is generaged by the command below
+# qchelp inputfiles.gz
+#
+#PBS -q week
+#PBS -o /dev/null
+#PBS -e /dev/null
+#PBS -l nodes=1:ppn=1
+cd /home/users/kjyi/Projects/til/hcc_til_HDKim/pd1_high_low
+
+# ----------------------------
+log=log/FastQC.log
+outdir=fastq/qc
+FILES="fastq/WES_tumor/106T_1.fastq.gz fastq/WES_tumor/106T_2.fastq.gz fastq/WES_tumor/116T_1.fastq.gz fastq/WES_tumor/116T_2.fastq.gz fastq/WES_tumor/125T_1.fastq.gz fastq/WES_tumor/125T_2.fastq.gz fastq/WES_tumor/126T_1.fastq.gz fastq/WES_tumor/126T_2.fastq.gz fastq/WES_tumor/128T_1.fastq.gz fastq/WES_tumor/128T_2.fastq.gz fastq/WES_tumor/134T_1.fastq.gz fastq/WES_tumor/134T_2.fastq.gz fastq/WES_tumor/136T_1.fastq.gz fastq/WES_tumor/136T_2.fastq.gz fastq/WES_tumor/93T_1.fastq.gz fastq/WES_tumor/93T_2.fastq.gz fastq/WES_tumor/95T_1.fastq.gz fastq/WES_tumor/95T_2.fastq.gz fastq/WES_tumor/99T_1.fastq.gz fastq/WES_tumor/99T_2.fastq.gz fastq/WGS_normal/106PB_R1.fastq.gz fastq/WGS_normal/106PB_R2.fastq.gz fastq/WGS_normal/116PB_R1.fastq.gz fastq/WGS_normal/116PB_R2.fastq.gz fastq/WGS_normal/125PB_R1.fastq.gz fastq/WGS_normal/125PB_R2.fastq.gz fastq/WGS_normal/126PB_R1.fastq.gz fastq/WGS_normal/126PB_R2.fastq.gz fastq/WGS_normal/128PB_R1.fastq.gz fastq/WGS_normal/128PB_R2.fastq.gz fastq/WGS_normal/128T_R1.fastq.gz fastq/WGS_normal/128T_R2.fastq.gz fastq/WGS_normal/134N_R1.fastq.gz fastq/WGS_normal/134N_R2.fastq.gz fastq/WGS_normal/136PB_R1.fastq.gz fastq/WGS_normal/136PB_R2.fastq.gz fastq/WGS_normal/93PB_R1.fastq.gz fastq/WGS_normal/93PB_R2.fastq.gz fastq/WGS_normal/95PB_R1.fastq.gz fastq/WGS_normal/95PB_R2.fastq.gz fastq/WGS_normal/99PB_R1.fastq.gz fastq/WGS_normal/99PB_R2.fastq.gz"
+# ----------------------------
+mkdir -p $outdir/individual
+mkdir -p `dirname $log`
+echo "FastQC start" > $log/FastQC.log
+
+
+
+
+/home/users/tools/fastqc/FastQC/fastqc -o $outdir/individual $FILES &>> $log &&\
+echo MultiQC start >> $log &&\
+/usr/local/bin/multiqc -o $outdir $outdir/individual &>> $log/FastQC.log &&\
+mv $log ${log/.log/.done}
+if [ -f $log ]; then
+	mv $log ${log/.log/.fail}
+fi
