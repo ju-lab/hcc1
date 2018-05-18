@@ -106,8 +106,8 @@ exit 1
 fi #---------------------------------------------------------------------------
 for i in cnvkit/*.cnr; do
 	id=$(basename $i | sed 's/_.cnr//')
-	mkdir -p purecn/$id
-	purecn PureCN.R --out purecn/$id \
+	mkdir -p purecn/output/$id
+	(purecn PureCN.R --out purecn/output/$id \
 		--sampleid $id \
 		--tumor $i \
 		--segfile ${i/.cnr/.seg} \
@@ -115,11 +115,11 @@ for i in cnvkit/*.cnr; do
 		--vcf mutect2/filter1_xcontam/${id}_.filter1.vcf.gz \
 		--genome hg19 \
 		--funsegmentation none \
-		--force --postoptimize --seed 123
-	exit 1
+		--snpblacklist ~/ref/hg19/hg19_simpleRepeats.bed \
+		--force --postoptimize --seed 123 &> log/$id.purecn.log && mv log/$id.purecn.log log/$id.purecn.done ) &
 done
-#		--snpblacklist ~/ref/hg19/hg19_simpleRepeats.bed \
-
+wait
+echo finish
 
 # PureCN internal
 # with mutect2 filter-out
