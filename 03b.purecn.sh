@@ -1,7 +1,8 @@
 #!/bin/bash
 
 # target information: IntervalFile.R
-bait=pon/cnv/target_bed/S04380110_SureSelectV5_DepthOfCoverage.bed
+bait=./mutect2/pon/cnv/target_bed/S04380110_SureSelectV5_DepthOfCoverage.bed
+
 fa=/home/users/kjyi/ref/hg19.fa
 mappa=/home/users/kjyi/ref/hg19/wgEncodeCrgMapabilityAlign100mer.bw
 rep=/home/users/kjyi/ref/hg19/wgEncodeUwRepliSeqK562WaveSignalRep1.bigWig
