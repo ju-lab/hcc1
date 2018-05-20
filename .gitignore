@@ -1,0 +1,9 @@
+*/
+*.Rproj
+*tmp*
+*temp*
+*.tsv
+*.Rds
+*.Rdata
+*.txt
+*.log
