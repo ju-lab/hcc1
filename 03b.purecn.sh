@@ -103,7 +103,6 @@ for i in cnvkit/*.cns;do
 done
 wait
 exit 1
-fi #---------------------------------------------------------------------------
 for i in cnvkit/*.cnr; do
 	id=$(basename $i | sed 's/_.cnr//')
 	mkdir -p purecn/output/$id
@@ -120,6 +119,48 @@ for i in cnvkit/*.cnr; do
 done
 wait
 echo finish
+
+# gatk callableloci
+# mean target depth is calculated with awk
+# awk -F$'\t' '{ti = $3 - $2; ws = $5 * ti; ts = ts + ti} END {print ws / ts}' files
+
+odir=purecn/CallableLoci
+mkdir -p $odir
+for i in  bam/WES_tumor/*.bam; do
+	id=$(basename $i | sed 's/.bam//')
+	java -jar gatk.jar -T CallableLoci \
+		--minDepth 40 \
+		-R ~/ref/hg19.fa \
+		-I $i \
+		-summary $odir/$id.CallableLoci.summary.txt \
+		-o $odir/$id.CallableLoci.bed &
+done
+wait
+
+for i in purecn/CallableLoci/*.CallableLoci.bed; do
+	grep CALLABLE $i > ${i/.bed/.filtered.bed}
+done
+gzip purecn/CallableLoci/*CallableLoci.bed
+
+exit 1
+
+
+fi #---------------------------------------------------------------------------
+
+# PureCN Dx -not work well in some cases
+mkdir -p purecn/dx
+for i in purecn/output/*; do
+	id=$(basename $i)
+	purecn Dx.R --out purecn/dx/$id \
+		--rds $i/$id.rds \
+		--callable purecn/CallableLoci/${id}_.CallableLoci.filtered.bed \
+		--exclude ~/ref/hg19/hg19_simpleRepeats.patched.bed \
+		--signature --force &> purecn/dx/$id.dx.log &
+
+done
+wait
+echo done
+exit 1
 
 # PureCN internal
 # with mutect2 filter-out
