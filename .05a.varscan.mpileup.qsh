@@ -1,0 +1,10 @@
+#!/bin/bash
+#PBS -e /dev/null
+#PBS -o /dev/null
+#PBS -q week
+#PBS -l nodes=1:ppn=24,mem=240gb
+cd $PBS_O_WORKDIR
+
+mkdir -p varscan/mpileup
+mpileup.sh -t 24 -r hg19 -o varscan/mpileup  bam/WG*/*.bam -e mpileup.log
+

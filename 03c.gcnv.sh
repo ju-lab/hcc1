@@ -21,7 +21,7 @@ fi
 
 # run cohort mode
 if true; then
-java -jar gatk4 GermlineCNVCaller \
+java -jar gatk4.jar GermlineCNVCaller \
 	--run-mode COHORT \
 	-L ~/ref/hg19/hg19.chrom.sizes.patched.interest.list \
 	-I bam/WGS_normal/106PB_R.bam \

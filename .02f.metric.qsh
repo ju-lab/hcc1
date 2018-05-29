@@ -1,0 +1,29 @@
+#!/bin/bash
+#PBS -q day
+#PBS -e /dev/null
+#PBS -o /dev/null
+#PBS -N vcf_metric
+#PBS -l nodes=1:ppn=28
+if [ ! "x$PBS_O_WORKDIR" == "x" ]; then cd $PBS_O_WORKDIR; fi
+outdir=mutect2/vcf_metric
+mkdir -p $outdir
+for i in mutect2/filter1_xcontam/*.vcf.gz; do
+	id=$(basename $i | sed 's/T_.filter1.vcf.gz//')
+	tb=$(ls bam/WE*/*.bam|grep ${id}T)
+	nb=$(ls bam/WG*/*.bam|grep ${id})
+	nid=$(basename $nb | sed 's/_R.bam//')
+	run-gatk.sh \
+		--analysis_type CalculateSNVMetrics \
+		--reference_sequence /home/users/kjyi/ref/hg19.fa \
+		--countOverlappingReadPairs DISCARD_IF_DISCORDANT_OR_USE_HIGHEST_BASE_QUALITY \
+		--intervals $i \
+		--variant $i \
+		--input_file $tb \
+		--input_file $nb \
+		--sample ${id}T_ \
+		--controlSample ${nid}_R \
+		--minimumMappingQuality 1 \
+		--minimumBaseQuality 10 \
+		--out $outdir/${id}T.metrics.vcf &> log/metric.${id}T.log &
+done
+wait

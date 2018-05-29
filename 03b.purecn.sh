@@ -103,6 +103,7 @@ for i in cnvkit/*.cns;do
 done
 wait
 exit 1
+fi #---------------------------------------------------------------------------
 for i in cnvkit/*.cnr; do
 	id=$(basename $i | sed 's/_.cnr//')
 	mkdir -p purecn/output/$id
@@ -111,7 +112,7 @@ for i in cnvkit/*.cnr; do
 		--tumor $i \
 		--segfile ${i/.cnr/.seg} \
 		--normal_panel purecn/reference/mapping_bias_agilent_v5_hg19.rds \
-		--vcf mutect2/filter1_xcontam/${id}_.filter1.vcf.gz \
+		--vcf mutect2/filter2_hard/${id}.filter2.vcf.gz \
 		--genome hg19 \
 		--funsegmentation none \
 		--snpblacklist ~/ref/hg19/hg19_simpleRepeats.bed \
@@ -119,7 +120,7 @@ for i in cnvkit/*.cnr; do
 done
 wait
 echo finish
-
+exit 1
 # gatk callableloci
 # mean target depth is calculated with awk
 # awk -F$'\t' '{ti = $3 - $2; ws = $5 * ti; ts = ts + ti} END {print ws / ts}' files
@@ -145,7 +146,6 @@ gzip purecn/CallableLoci/*CallableLoci.bed
 exit 1
 
 
-fi #---------------------------------------------------------------------------
 
 # PureCN Dx -not work well in some cases
 mkdir -p purecn/dx

@@ -1,0 +1,44 @@
+#!/bin/bash
+#PBS -o /dev/null
+#PBS -e /dev/null
+#PBS -N caveman_run
+#PBS -l nodes=1:ppn=20,mem=250gb
+#PBS -q week
+#if [ "x$PBS_O_WORKDIR" == "x" ]; then echo qsub me; exit 1; fi
+#cd $PBS_O_WORKDIR
+if false; then
+mkdir -p caveman/prepare
+cut -f 2-4,7 purecn/output/${tumor_id}/${tumor_id}_dnacopy.seg > caveman/prepare/${tumor_id}.cn.bed
+touch caveman/prepare/${normal_id}.cn.bed
+java -jar ~/jars/gatk4.jar SelectVariants \
+	-R ~/ref/hg19.fa \
+	-V mutect2/pon/${normal_id}_R.vcf.gz \
+	-select-type INDEL \
+	-O caveman/prepare/${tumor_id}.indel.vcf.gz
+zcat caveman/prepare/${tumor_id}.indel.vcf.gz | grep -v -E "^#" | \
+	awk -F$'\t' 'BEGIN {OFS = FS} {print $1, $2-1, $2-1+length($4) }' \
+	> caveman/prepare/${tumor_id}.indel.bed
+mkdir -p caveman/output/${tumor_id}
+fi
+tumor_id=106T
+normal_id=106PB
+caveman.pl \
+	-o ./caveman/output/${tumor_id} \
+	-r ~/ref/hg19.fa.fai \
+	-tb bam/WES_tumor/${tumor_id}_.bam \
+	-nb bam/WGS_normal/${normal_id}_R.bam \
+	-ig ~/ref/hg19/hg19_simpleRepeats.patched.bed \
+	-tc caveman/prepare/${tumor_id}.cn.bed \
+	-nc caveman/prepare/${normal_id}.cn.bed \
+	-s HUMAN \
+	-sa 37 \
+	-flag-bed-files ~/ref/hg19/dbsnp/All_20180423.patched.vcf.gz \
+	-germline-indel caveman/prepare/${tumor_id}.indel.bed \
+	-unmatched-vcf mutect2/filter1_xcontam \
+	-st exome \
+	-k `csv2tsv purecn/output/${tumor_id}/${tumor_id}.csv | grep -v "Sampleid" | cut -f2 | awk '{print 1-$i}'` \
+	-t 20 -l 20 \
+	-np WXS \
+	-tp WXS \
+	-td `csv2tsv purecn/output/${tumor_id}/${tumor_id}.csv | grep -v "Sampleid" | cut -f3 | awk '{print int($1+0.5)}'` \
+	-nd 2 &> log/cvm.${tumor_id}.expect_non.log
