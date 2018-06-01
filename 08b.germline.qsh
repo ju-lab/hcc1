@@ -1,0 +1,85 @@
+#!/bin/bash
+#PBS -q week
+#PBS -o /dev/null
+#PBS -e /dev/null
+#PBS -l nodes=1:ppn=24
+# /home/users/kjyi/Projects/til/hcc_til_HDKim/pd1_high_low/purecn/pon/target_bed/S04380110_SureSelectV5_DepthOfCoverage.patched.bed
+cd $PBS_O_WORKDIR
+mkdir /home/users/kjyi/Projects/til/hcc_til_HDKim/pd1_high_low/germline/strelka
+mkdir /home/users/kjyi/Projects/til/hcc_til_HDKim/pd1_high_low/germline/freebayes
+mkdir /home/users/kjyi/Projects/til/hcc_til_HDKim/pd1_high_low/germline/manta
+(
+	cp /home/users/kjyi/Projects/til/hcc_til_HDKim/pd1_high_low/purecn/pon/target_bed/S04380110_SureSelectV5_DepthOfCoverage.patched.bed /home/users/kjyi/Projects/til/hcc_til_HDKim/pd1_high_low/purecn/pon/target_bed/S04380110_SureSelectV5_DepthOfCoverage.patched.bed.strelka.bed &&
+	/home/users/cjyoon/anaconda3/bin/bgzip -f /home/users/kjyi/Projects/til/hcc_til_HDKim/pd1_high_low/purecn/pon/target_bed/S04380110_SureSelectV5_DepthOfCoverage.patched.bed.strelka.bed &&
+	/home/users/cjyoon/anaconda3/bin/tabix -p bed /home/users/kjyi/Projects/til/hcc_til_HDKim/pd1_high_low/purecn/pon/target_bed/S04380110_SureSelectV5_DepthOfCoverage.patched.bed.strelka.bed.gz &&
+	(
+		/home/users/cjyoon/anaconda3/envs/py27/bin/python /home/users/cjyoon/anaconda3/envs/py27/share/strelka-2.8.4-0/bin/configureStrelkaGermlineWorkflow.py  --bam /home/users/kjyi/Projects/til/hcc_til_HDKim/pd1_high_low/bam/WGS_normal/106PB_R.bam --bam /home/users/kjyi/Projects/til/hcc_til_HDKim/pd1_high_low/bam/WGS_normal/116PB_R.bam --bam /home/users/kjyi/Projects/til/hcc_til_HDKim/pd1_high_low/bam/WGS_normal/125PB_R.bam --bam /home/users/kjyi/Projects/til/hcc_til_HDKim/pd1_high_low/bam/WGS_normal/126PB_R.bam --bam /home/users/kjyi/Projects/til/hcc_til_HDKim/pd1_high_low/bam/WGS_normal/128PB_R.bam --bam /home/users/kjyi/Projects/til/hcc_til_HDKim/pd1_high_low/bam/WGS_normal/134N_R.bam --bam /home/users/kjyi/Projects/til/hcc_til_HDKim/pd1_high_low/bam/WGS_normal/136PB_R.bam --bam /home/users/kjyi/Projects/til/hcc_til_HDKim/pd1_high_low/bam/WGS_normal/93PB_R.bam --bam /home/users/kjyi/Projects/til/hcc_til_HDKim/pd1_high_low/bam/WGS_normal/95PB_R.bam --bam /home/users/kjyi/Projects/til/hcc_til_HDKim/pd1_high_low/bam/WGS_normal/99PB_R.bam --referenceFasta /home/users/data/01_reference/human_g1k_v37/human_g1k_v37.fa --runDir /home/users/kjyi/Projects/til/hcc_til_HDKim/pd1_high_low/germline/strelka  --callRegions /home/users/kjyi/Projects/til/hcc_til_HDKim/pd1_high_low/purecn/pon/target_bed/S04380110_SureSelectV5_DepthOfCoverage.patched.bed.strelka.bed.gz
+		/home/users/cjyoon/anaconda3/envs/py27/bin/python /home/users/kjyi/Projects/til/hcc_til_HDKim/pd1_high_low/germline/strelka/runWorkflow.py -m local -j 8 --quiet
+	)&> log/cjyoon_strelka.log &
+	(
+		/home/users/cjyoon/anaconda3/envs/py27/bin/python /home/users/cjyoon/anaconda3/envs/py27/share/manta-1.2.1-0/bin/configManta.py  --bam /home/users/kjyi/Projects/til/hcc_til_HDKim/pd1_high_low/bam/WGS_normal/106PB_R.bam --bam /home/users/kjyi/Projects/til/hcc_til_HDKim/pd1_high_low/bam/WGS_normal/116PB_R.bam --bam /home/users/kjyi/Projects/til/hcc_til_HDKim/pd1_high_low/bam/WGS_normal/125PB_R.bam --bam /home/users/kjyi/Projects/til/hcc_til_HDKim/pd1_high_low/bam/WGS_normal/126PB_R.bam --bam /home/users/kjyi/Projects/til/hcc_til_HDKim/pd1_high_low/bam/WGS_normal/128PB_R.bam --bam /home/users/kjyi/Projects/til/hcc_til_HDKim/pd1_high_low/bam/WGS_normal/134N_R.bam --bam /home/users/kjyi/Projects/til/hcc_til_HDKim/pd1_high_low/bam/WGS_normal/136PB_R.bam --bam /home/users/kjyi/Projects/til/hcc_til_HDKim/pd1_high_low/bam/WGS_normal/93PB_R.bam --bam /home/users/kjyi/Projects/til/hcc_til_HDKim/pd1_high_low/bam/WGS_normal/95PB_R.bam --bam /home/users/kjyi/Projects/til/hcc_til_HDKim/pd1_high_low/bam/WGS_normal/99PB_R.bam --referenceFasta /home/users/data/01_reference/human_g1k_v37/human_g1k_v37.fa --runDir /home/users/kjyi/Projects/til/hcc_til_HDKim/pd1_high_low/germline/manta  --callRegions /home/users/kjyi/Projects/til/hcc_til_HDKim/pd1_high_low/purecn/pon/target_bed/S04380110_SureSelectV5_DepthOfCoverage.patched.bed.strelka.bed.gz
+		/home/users/cjyoon/anaconda3/envs/py27/bin/python /home/users/kjyi/Projects/til/hcc_til_HDKim/pd1_high_low/germline/manta/runWorkflow.py -m local -j 8 --quiet
+	)&> log/cjyoon_manta.log 
+)&
+(
+mkdir /home/users/kjyi/Projects/til/hcc_til_HDKim/pd1_high_low/germline/freebayes/106PB_R
+/home/users/cjyoon/anaconda3/bin/freebayes -f /home/users/data/01_reference/human_g1k_v37/human_g1k_v37.fa -v /home/users/kjyi/Projects/til/hcc_til_HDKim/pd1_high_low/germline/freebayes/106PB_R/106PB_R.freebayes.vcf --standard-filters /home/users/kjyi/Projects/til/hcc_til_HDKim/pd1_high_low/bam/WGS_normal/106PB_R.bam  --target /home/users/kjyi/Projects/til/hcc_til_HDKim/pd1_high_low/purecn/pon/target_bed/S04380110_SureSelectV5_DepthOfCoverage.patched.bed
+/home/users/cjyoon/anaconda3/bin/bgzip -f /home/users/kjyi/Projects/til/hcc_til_HDKim/pd1_high_low/germline/freebayes/106PB_R/106PB_R.freebayes.vcf
+/home/users/cjyoon/anaconda3/bin/tabix -p vcf /home/users/kjyi/Projects/til/hcc_til_HDKim/pd1_high_low/germline/freebayes/106PB_R/106PB_R.freebayes.vcf.gz
+)&> log/cjyoon_freebayes.106.log &
+(
+mkdir /home/users/kjyi/Projects/til/hcc_til_HDKim/pd1_high_low/germline/freebayes/116PB_R
+/home/users/cjyoon/anaconda3/bin/freebayes -f /home/users/data/01_reference/human_g1k_v37/human_g1k_v37.fa -v /home/users/kjyi/Projects/til/hcc_til_HDKim/pd1_high_low/germline/freebayes/116PB_R/116PB_R.freebayes.vcf --standard-filters /home/users/kjyi/Projects/til/hcc_til_HDKim/pd1_high_low/bam/WGS_normal/116PB_R.bam  --target /home/users/kjyi/Projects/til/hcc_til_HDKim/pd1_high_low/purecn/pon/target_bed/S04380110_SureSelectV5_DepthOfCoverage.patched.bed
+/home/users/cjyoon/anaconda3/bin/bgzip -f /home/users/kjyi/Projects/til/hcc_til_HDKim/pd1_high_low/germline/freebayes/116PB_R/116PB_R.freebayes.vcf
+/home/users/cjyoon/anaconda3/bin/tabix -p vcf /home/users/kjyi/Projects/til/hcc_til_HDKim/pd1_high_low/germline/freebayes/116PB_R/116PB_R.freebayes.vcf.gz
+)&> log/cjyoon_freebayes.116.log &
+(
+mkdir /home/users/kjyi/Projects/til/hcc_til_HDKim/pd1_high_low/germline/freebayes/125PB_R
+/home/users/cjyoon/anaconda3/bin/freebayes -f /home/users/data/01_reference/human_g1k_v37/human_g1k_v37.fa -v /home/users/kjyi/Projects/til/hcc_til_HDKim/pd1_high_low/germline/freebayes/125PB_R/125PB_R.freebayes.vcf --standard-filters /home/users/kjyi/Projects/til/hcc_til_HDKim/pd1_high_low/bam/WGS_normal/125PB_R.bam  --target /home/users/kjyi/Projects/til/hcc_til_HDKim/pd1_high_low/purecn/pon/target_bed/S04380110_SureSelectV5_DepthOfCoverage.patched.bed
+/home/users/cjyoon/anaconda3/bin/bgzip -f /home/users/kjyi/Projects/til/hcc_til_HDKim/pd1_high_low/germline/freebayes/125PB_R/125PB_R.freebayes.vcf
+/home/users/cjyoon/anaconda3/bin/tabix -p vcf /home/users/kjyi/Projects/til/hcc_til_HDKim/pd1_high_low/germline/freebayes/125PB_R/125PB_R.freebayes.vcf.gz
+)&> log/cjyoon_freebayes.125.log &
+(
+mkdir /home/users/kjyi/Projects/til/hcc_til_HDKim/pd1_high_low/germline/freebayes/126PB_R
+/home/users/cjyoon/anaconda3/bin/freebayes -f /home/users/data/01_reference/human_g1k_v37/human_g1k_v37.fa -v /home/users/kjyi/Projects/til/hcc_til_HDKim/pd1_high_low/germline/freebayes/126PB_R/126PB_R.freebayes.vcf --standard-filters /home/users/kjyi/Projects/til/hcc_til_HDKim/pd1_high_low/bam/WGS_normal/126PB_R.bam  --target /home/users/kjyi/Projects/til/hcc_til_HDKim/pd1_high_low/purecn/pon/target_bed/S04380110_SureSelectV5_DepthOfCoverage.patched.bed
+/home/users/cjyoon/anaconda3/bin/bgzip -f /home/users/kjyi/Projects/til/hcc_til_HDKim/pd1_high_low/germline/freebayes/126PB_R/126PB_R.freebayes.vcf
+/home/users/cjyoon/anaconda3/bin/tabix -p vcf /home/users/kjyi/Projects/til/hcc_til_HDKim/pd1_high_low/germline/freebayes/126PB_R/126PB_R.freebayes.vcf.gz
+)&> log/cjyoon_freebayes.126.log &
+(
+mkdir /home/users/kjyi/Projects/til/hcc_til_HDKim/pd1_high_low/germline/freebayes/128PB_R
+/home/users/cjyoon/anaconda3/bin/freebayes -f /home/users/data/01_reference/human_g1k_v37/human_g1k_v37.fa -v /home/users/kjyi/Projects/til/hcc_til_HDKim/pd1_high_low/germline/freebayes/128PB_R/128PB_R.freebayes.vcf --standard-filters /home/users/kjyi/Projects/til/hcc_til_HDKim/pd1_high_low/bam/WGS_normal/128PB_R.bam  --target /home/users/kjyi/Projects/til/hcc_til_HDKim/pd1_high_low/purecn/pon/target_bed/S04380110_SureSelectV5_DepthOfCoverage.patched.bed
+/home/users/cjyoon/anaconda3/bin/bgzip -f /home/users/kjyi/Projects/til/hcc_til_HDKim/pd1_high_low/germline/freebayes/128PB_R/128PB_R.freebayes.vcf
+/home/users/cjyoon/anaconda3/bin/tabix -p vcf /home/users/kjyi/Projects/til/hcc_til_HDKim/pd1_high_low/germline/freebayes/128PB_R/128PB_R.freebayes.vcf.gz
+)&> log/cjyoon_freebayes.128.log &
+(
+mkdir /home/users/kjyi/Projects/til/hcc_til_HDKim/pd1_high_low/germline/freebayes/134N_R
+/home/users/cjyoon/anaconda3/bin/freebayes -f /home/users/data/01_reference/human_g1k_v37/human_g1k_v37.fa -v /home/users/kjyi/Projects/til/hcc_til_HDKim/pd1_high_low/germline/freebayes/134N_R/134N_R.freebayes.vcf --standard-filters /home/users/kjyi/Projects/til/hcc_til_HDKim/pd1_high_low/bam/WGS_normal/134N_R.bam  --target /home/users/kjyi/Projects/til/hcc_til_HDKim/pd1_high_low/purecn/pon/target_bed/S04380110_SureSelectV5_DepthOfCoverage.patched.bed
+/home/users/cjyoon/anaconda3/bin/bgzip -f /home/users/kjyi/Projects/til/hcc_til_HDKim/pd1_high_low/germline/freebayes/134N_R/134N_R.freebayes.vcf
+/home/users/cjyoon/anaconda3/bin/tabix -p vcf /home/users/kjyi/Projects/til/hcc_til_HDKim/pd1_high_low/germline/freebayes/134N_R/134N_R.freebayes.vcf.gz
+)&> log/cjyoon_freebayes.134.log &
+(
+mkdir /home/users/kjyi/Projects/til/hcc_til_HDKim/pd1_high_low/germline/freebayes/136PB_R
+/home/users/cjyoon/anaconda3/bin/freebayes -f /home/users/data/01_reference/human_g1k_v37/human_g1k_v37.fa -v /home/users/kjyi/Projects/til/hcc_til_HDKim/pd1_high_low/germline/freebayes/136PB_R/136PB_R.freebayes.vcf --standard-filters /home/users/kjyi/Projects/til/hcc_til_HDKim/pd1_high_low/bam/WGS_normal/136PB_R.bam  --target /home/users/kjyi/Projects/til/hcc_til_HDKim/pd1_high_low/purecn/pon/target_bed/S04380110_SureSelectV5_DepthOfCoverage.patched.bed
+/home/users/cjyoon/anaconda3/bin/bgzip -f /home/users/kjyi/Projects/til/hcc_til_HDKim/pd1_high_low/germline/freebayes/136PB_R/136PB_R.freebayes.vcf
+/home/users/cjyoon/anaconda3/bin/tabix -p vcf /home/users/kjyi/Projects/til/hcc_til_HDKim/pd1_high_low/germline/freebayes/136PB_R/136PB_R.freebayes.vcf.gz
+)&> log/cjyoon_freebayes.136.log &
+(
+mkdir /home/users/kjyi/Projects/til/hcc_til_HDKim/pd1_high_low/germline/freebayes/93PB_R
+/home/users/cjyoon/anaconda3/bin/freebayes -f /home/users/data/01_reference/human_g1k_v37/human_g1k_v37.fa -v /home/users/kjyi/Projects/til/hcc_til_HDKim/pd1_high_low/germline/freebayes/93PB_R/93PB_R.freebayes.vcf --standard-filters /home/users/kjyi/Projects/til/hcc_til_HDKim/pd1_high_low/bam/WGS_normal/93PB_R.bam  --target /home/users/kjyi/Projects/til/hcc_til_HDKim/pd1_high_low/purecn/pon/target_bed/S04380110_SureSelectV5_DepthOfCoverage.patched.bed
+/home/users/cjyoon/anaconda3/bin/bgzip -f /home/users/kjyi/Projects/til/hcc_til_HDKim/pd1_high_low/germline/freebayes/93PB_R/93PB_R.freebayes.vcf
+/home/users/cjyoon/anaconda3/bin/tabix -p vcf /home/users/kjyi/Projects/til/hcc_til_HDKim/pd1_high_low/germline/freebayes/93PB_R/93PB_R.freebayes.vcf.gz
+)&> log/cjyoon_freebayes.93.log &
+(
+mkdir /home/users/kjyi/Projects/til/hcc_til_HDKim/pd1_high_low/germline/freebayes/95PB_R
+/home/users/cjyoon/anaconda3/bin/freebayes -f /home/users/data/01_reference/human_g1k_v37/human_g1k_v37.fa -v /home/users/kjyi/Projects/til/hcc_til_HDKim/pd1_high_low/germline/freebayes/95PB_R/95PB_R.freebayes.vcf --standard-filters /home/users/kjyi/Projects/til/hcc_til_HDKim/pd1_high_low/bam/WGS_normal/95PB_R.bam  --target /home/users/kjyi/Projects/til/hcc_til_HDKim/pd1_high_low/purecn/pon/target_bed/S04380110_SureSelectV5_DepthOfCoverage.patched.bed
+/home/users/cjyoon/anaconda3/bin/bgzip -f /home/users/kjyi/Projects/til/hcc_til_HDKim/pd1_high_low/germline/freebayes/95PB_R/95PB_R.freebayes.vcf
+/home/users/cjyoon/anaconda3/bin/tabix -p vcf /home/users/kjyi/Projects/til/hcc_til_HDKim/pd1_high_low/germline/freebayes/95PB_R/95PB_R.freebayes.vcf.gz
+)&> log/cjyoon_freebayes.95.log &
+(
+mkdir /home/users/kjyi/Projects/til/hcc_til_HDKim/pd1_high_low/germline/freebayes/99PB_R
+/home/users/cjyoon/anaconda3/bin/freebayes -f /home/users/data/01_reference/human_g1k_v37/human_g1k_v37.fa -v /home/users/kjyi/Projects/til/hcc_til_HDKim/pd1_high_low/germline/freebayes/99PB_R/99PB_R.freebayes.vcf --standard-filters /home/users/kjyi/Projects/til/hcc_til_HDKim/pd1_high_low/bam/WGS_normal/99PB_R.bam  --target /home/users/kjyi/Projects/til/hcc_til_HDKim/pd1_high_low/purecn/pon/target_bed/S04380110_SureSelectV5_DepthOfCoverage.patched.bed
+/home/users/cjyoon/anaconda3/bin/bgzip -f /home/users/kjyi/Projects/til/hcc_til_HDKim/pd1_high_low/germline/freebayes/99PB_R/99PB_R.freebayes.vcf
+/home/users/cjyoon/anaconda3/bin/tabix -p vcf /home/users/kjyi/Projects/til/hcc_til_HDKim/pd1_high_low/germline/freebayes/99PB_R/99PB_R.freebayes.vcf.gz
+)&> log/cjyoon_freebayes.99.log 
+
+wait

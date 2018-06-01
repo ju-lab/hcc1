@@ -1,7 +1,16 @@
 if (F) {
 	system("mkdir -p stat")
 	rmarkdown::render("07b.stat.R",
-					  output_format = "html_document",
+					  output_format = "pdf_document",
+					  clean = TRUE)
+	rmarkdown::render("07b.stat.R",
+					  output_format =
+					  	rmarkdown::pdf_document(
+					  		toc = TRUE,
+					  		latex_engine = 'xelatex',
+					  		pandoc_args =
+					  			c("--variable",
+					  			  "mainfont='NanumGothic'")),
 					  clean = TRUE)
 }
 
@@ -67,6 +76,7 @@ count2 <- merged %>%
 	group_by(pd1, id) %>%
 	mutate(N = n()) %>%
 	group_by(pd1, id, type2) %>%
+
 	summarise(n = n(), N = max(N),
 			  cellfrac_over_0.5 = sum(CELLFRACTION > .5, na.rm = T),
 			  cellfrac_over_0.7 = sum(CELLFRACTION > .7, na.rm = T)) %>%
