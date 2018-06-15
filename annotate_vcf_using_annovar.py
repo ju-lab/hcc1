@@ -1,1 +1,0 @@
-/home/users/sypark/01_Python_files/general_codes/annotate_vcf_using_annovar.py
