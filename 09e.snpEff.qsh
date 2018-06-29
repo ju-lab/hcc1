@@ -5,38 +5,63 @@
 #PBS -l nodes=1:ppn=24
 #PBS -N snpEff
 if [ -n "$PBS_O_WORKDIR" ]; then cd $PBS_O_WORKDIR; fi
-mkdir -p mutect2/annotated/snpEff mutect2/annotated/log
+mkdir -p mutect2/annotated/snpEff/summary mutect2/annotated/log
 for i in mutect2/filter2_hard/pass/*.gz;do
 	(
 	output=mutect2/annotated/snpEff/$(basename $i)
-	java -jar snpEff.jar -canon -cancer GRCh37.75 $i | bgzip > $output 
+	summary=mutect2/annotated/snpEff/summary/$(basename $i)
+	java -jar snpEff.jar eff -canon -cancer -s $summary GRCh37.75 $i | bgzip > $output 
 	tabix -p vcf $output 
 	)&>mutect2/annotated/log/$(basename $i | sed 's/vcf.gz/log/') &
 done
 wait
 exit 0
-SnpEff version SnpEff 4.3t (build 2017-11-24 10:18), by Pablo Cingolani
-Usage: snpEff [command] [options] [files]
 
-Run 'java -jar snpEff.jar command' for help on each specific command
+Command line :	SnpEff  
 
-Available commands: 
-	[eff|ann]                    : Annotate variants / calculate effects (you can use either 'ann' or 'eff', they mean the same). Default: ann (no command or 'ann').
-	build                        : Build a SnpEff database.
-	buildNextProt                : Build a SnpEff for NextProt (using NextProt's XML files).
-	cds                          : Compare CDS sequences calculated form a SnpEff database to the one in a FASTA file. Used for checking databases correctness.
-	closest                      : Annotate the closest genomic region.
-	count                        : Count how many intervals (from a BAM, BED or VCF file) overlap with each genomic interval.
-	databases                    : Show currently available databases (from local config file).
-	download                     : Download a SnpEff database.
-	dump                         : Dump to STDOUT a SnpEff database (mostly used for debugging).
-	genes2bed                    : Create a bed file from a genes list.
-	len                          : Calculate total genomic length for each marker type.
-	pdb                          : Build interaction database (based on PDB data).
-	protein                      : Compare protein sequences calculated form a SnpEff database to the one in a FASTA file. Used for checking databases correctness.
-	seq                          : Show sequence (from command line) translation.
-	show                         : Show a text representation of genes or transcripts coordiantes, DNA sequence and protein sequence.
-	translocReport               : Create a translocations report (from VCF file).
+snpEff version SnpEff 4.3t (build 2017-11-24 10:18), by Pablo Cingolani
+Usage: snpEff [eff] [options] genome_version [input_file]
+
+
+	variants_file                   : Default is STDIN
+
+
+
+Options:
+	-chr <string>                   : Prepend 'string' to chromosome name (e.g. 'chr1' instead of '1'). Only on TXT output.
+	-classic                        : Use old style annotations instead of Sequence Ontology and Hgvs.
+	-csvStats <file>                : Create CSV summary file.
+	-download                       : Download reference genome if not available. Default: true
+	-i <format>                     : Input format [ vcf, bed ]. Default: VCF.
+	-fileList                       : Input actually contains a list of files to process.
+	-o <format>                     : Ouput format [ vcf, gatk, bed, bedAnn ]. Default: VCF.
+	-s , -stats, -htmlStats         : Create HTML summary file.  Default is 'snpEff_summary.html'
+	-noStats                        : Do not create stats (summary) file
+
+Results filter options:
+	-fi , -filterInterval  <file>   : Only analyze changes that intersect with the intervals specified in this file (you may use this option many times)
+	-no-downstream                  : Do not show DOWNSTREAM changes
+	-no-intergenic                  : Do not show INTERGENIC changes
+	-no-intron                      : Do not show INTRON changes
+	-no-upstream                    : Do not show UPSTREAM changes
+	-no-utr                         : Do not show 5_PRIME_UTR or 3_PRIME_UTR changes
+	-no <effectType>                : Do not show 'EffectType'. This option can be used several times.
+
+Annotations options:
+	-cancer                         : Perform 'cancer' comparisons (Somatic vs Germline). Default: false
+	-cancerSamples <file>           : Two column TXT file defining 'oringinal \t derived' samples.
+	-formatEff                      : Use 'EFF' field compatible with older versions (instead of 'ANN').
+	-geneId                         : Use gene ID instead of gene name (VCF output). Default: false
+	-hgvs                           : Use HGVS annotations for amino acid sub-field. Default: true
+	-hgvsOld                        : Use old HGVS notation. Default: false
+	-hgvs1LetterAa                  : Use one letter Amino acid codes in HGVS notation. Default: false
+	-hgvsTrId                       : Use transcript ID in HGVS notation. Default: false
+	-lof                            : Add loss of function (LOF) and Nonsense mediated decay (NMD) tags.
+	-noHgvs                         : Do not add HGVS annotations.
+	-noLof                          : Do not add LOF and NMD annotations.
+	-noShiftHgvs                    : Do not shift variants according to HGVS notation (most 3prime end).
+	-oicr                           : Add OICR tag in VCF file. Default: false
+	-sequenceOntology               : Use Sequence Ontology terms. Default: true
 
 Generic options:
 	-c , -config                 : Specify config file
